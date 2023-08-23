@@ -1,0 +1,39 @@
+{% if request.user.is_authenticated %}
+<p>{{request.user}}</p>
+<a href="{% url 'logout' %}">Logout</a>
+{% else %}
+<a href="{% url 'login' %}">Login</a>
+{% endif %}
+<h1>My Todo List</h1>
+<a href="{% url 'task-create' %}">Create</a>
+<form method="get">
+    <input type="search" name="search" />
+    <input type="submit" value="Search" />
+</form>
+<ul>
+{% for todo in todos|dictsortreversed:"created_at"  %}
+    <li>{{ todo.created_at|date }} - <a href="{% url 'task-detail' todo.id %}">{{ todo.title }}</a>
+    <a href="{% url 'task-update' todo.id %}">Update</a>
+    <a href="{% url 'task-delete' todo.id %}">Delete</a>
+    </li>
+{% empty %}
+    <li>No Todos yet in list.</li>
+{% endfor %}
+</ul>
+<div class="pagination">
+  <span class="step-links">
+    {% if page_obj.has_previous %}
+      <a href="?page=1">&laquo; first</a>
+      <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+    {% endif %}
+
+    <span class="current">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+    </span>
+
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}">next</a>
+      <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+    {% endif %}
+  </span>
+</div>
