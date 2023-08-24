@@ -49,13 +49,18 @@ class TaskList(LoginRequiredMixin,ListView):
         queryset = super().get_queryset()
         queryset = queryset.filter(user=self.request.user, complete=False)
         queryset = queryset.order_by('-created_at')  # Order by creation date in descending order
+        search_input = self.request.GET.get('search') or ''
+        if search_input:
+            queryset = queryset.filter(title__icontains=search_input)
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["now"] = timezone.now()
-        # context["todos"] = context["todos"].filter(user=self.request.user)
-        #context["count"] = context["todos"].filter(complete=False).count()
+        # search_input = self.request.GET.get('search-area') or ''
+        # if search_input:
+            # context["todos"] = context["todos"].filter(title__icontains=search_input)
+        context["count"] = Task.objects.filter(user=self.request.user,complete=False).count()
         return context
 
 
